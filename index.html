@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f2df">
+  <title>Một Bữa Cơm — Hôm nay ăn gì cũng được, miễn là vui!</title>
+  <style>
+    :root {
+      --cream: #f7f2df;
+      --cream-2: #fffdf5;
+      --green: #527b45;
+      --green-dark: #315b35;
+      --green-light: #e7efdc;
+      --orange: #ef9d50;
+      --ink: #283528;
+      --muted: #75806f;
+      --line: #e7e4d6;
+      --shadow: 0 16px 45px rgba(57, 78, 48, .10);
+      --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--ink); background:
+        radial-gradient(circle at 8% 5%, rgba(239,157,80,.12), transparent 22rem),
+        radial-gradient(circle at 95% 22%, rgba(82,123,69,.10), transparent 25rem),
+        var(--cream);
+      font-family: ui-rounded, "Trebuchet MS", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .wrap { width: min(1100px, calc(100% - 36px)); margin: auto; }
+    .nav {
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      padding: 20px 0;
+    }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:900; font-size:1.15rem; color:var(--green-dark); }
+    .brand-mark { display:grid; place-items:center; width:42px; height:42px; border-radius:15px; background:#e4edd9; font-size:24px; transform:rotate(-7deg); }
+    .nav a { color:var(--green-dark); text-decoration:none; font-weight:800; font-size:.95rem; }
+    .nav-links { display:flex; gap:22px; align-items:center; }
+    .pill { display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:99px; background:var(--green-light); color:var(--green-dark); font-size:.82rem; font-weight:800; }
+    .hero {
+      display:grid; grid-template-columns: 1.1fr .9fr; align-items:center; gap:34px;
+      padding: 48px 0 62px;
+    }
+    .hero h1 { font-size:clamp(2.6rem, 6vw, 5rem); line-height:1.02; letter-spacing:-.055em; margin:18px 0; color:var(--green-dark); }
+    .hero h1 span { color:var(--orange); }
+    .hero p { max-width:550px; color:#66715f; font-size:1.08rem; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; }
+    .btn {
+      border:0; border-radius:15px; padding:13px 19px; font-weight:900;
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .btn:hover { transform:translateY(-2px); }
+    .btn-primary { color:white; background:var(--green); box-shadow:0 8px 18px rgba(82,123,69,.2); }
+    .btn-primary:hover { background:var(--green-dark); }
+    .btn-soft { color:var(--green-dark); background:#e7efdc; }
+    .hero-art {
+      min-height:370px; position:relative; display:grid; place-items:center;
+      border-radius:38px; background:linear-gradient(145deg,#e9efd9,#fff8e7);
+      box-shadow:var(--shadow); overflow:hidden;
+    }
+    .hero-art:before,.hero-art:after { content:""; position:absolute; border:2px dashed rgba(82,123,69,.2); border-radius:50%; }
+    .hero-art:before { width:300px;height:300px; }
+    .hero-art:after { width:390px;height:390px; }
+    .bowl { z-index:1; width:240px;height:190px; display:grid; place-items:center; font-size:125px;
+      background:#fffdf5; border:8px solid #e9d6ae; border-radius:48% 48% 42% 42%;
+      box-shadow:0 22px 35px rgba(72,78,46,.15); transform:rotate(-7deg); }
+    .float { position:absolute; z-index:2; font-size:42px; animation:bob 3s ease-in-out infinite; }
+    .f1 { top:13%; left:14%; }.f2 { top:19%; right:12%; animation-delay:.5s; }.f3 { bottom:15%; left:13%; animation-delay:1s; }.f4 { bottom:12%; right:14%; animation-delay:1.5s; }
+    @keyframes bob { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-12px) rotate(7deg)} }
+    .scribble { position:absolute; bottom:24px; z-index:2; font-weight:900; color:var(--green); transform:rotate(-4deg); }
+    section { padding:30px 0; }
+    .section-head { text-align:center; margin:0 auto 24px; max-width:650px; }
+    .section-head h2 { color:var(--green-dark); font-size:clamp(1.8rem,4vw,2.7rem); margin:10px 0; letter-spacing:-.04em; }
+    .section-head p { color:var(--muted); margin:0; }
+    .menu-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; }
+    .food-card {
+      text-align:left; border:2px solid transparent; background:var(--cream-2); padding:18px;
+      border-radius:22px; box-shadow:0 8px 25px rgba(57,78,48,.06); color:var(--ink);
+      transition:.18s ease; min-width:0;
+    }
+    .food-card:hover { transform:translateY(-4px); }
+    .food-card.active { border-color:var(--green); background:#f1f6e9; box-shadow:0 0 0 4px rgba(82,123,69,.10); }
+    .food-emoji { display:grid; place-items:center; height:85px; border-radius:17px; background:#f7f1df; font-size:52px; margin-bottom:13px; }
+    .food-card strong { display:block; font-size:1.03rem; }
+    .food-card small { color:var(--muted); display:block; margin:3px 0 10px; }
+    .price { color:var(--green-dark); font-weight:950; }
+    .custom-panel,.payment-panel,.thanks-panel,.stats-panel {
+      background:var(--cream-2); border:1px solid rgba(82,123,69,.09);
+      border-radius:var(--radius); padding:clamp(20px,4vw,32px); box-shadow:var(--shadow);
+    }
+    .custom-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:end; }
+    label { display:block; font-weight:850; margin-bottom:8px; }
+    input {
+      width:100%; border:1.5px solid var(--line); border-radius:13px; padding:13px 14px;
+      background:white; color:var(--ink); outline:none;
+    }
+    input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(82,123,69,.12); }
+    .amount-preview { background:var(--green-light); border-radius:15px; padding:13px 16px; color:var(--green-dark); font-weight:900; }
+    .payment-grid { display:grid; grid-template-columns:1fr .85fr; gap:24px; align-items:start; }
+    .payment-info { background:#f7f6ec; padding:18px; border-radius:18px; }
+    .info-row { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); }
+    .info-row:last-child { border:0; }
+    .info-label { display:block; color:var(--muted); font-size:.78rem; }
+    .info-value { font-weight:900; overflow-wrap:anywhere; }
+    .copy-btn { flex:none; border:0; background:#e5eddc; color:var(--green-dark); border-radius:10px; padding:8px 10px; font-size:.82rem; font-weight:900; }
+    .qr-card { text-align:center; background:#f7f6ec; border-radius:18px; padding:18px; }
+    .qr-card img { display:block; width:min(100%,230px); aspect-ratio:1; object-fit:contain; background:white; border-radius:14px; margin:12px auto; }
+    .qr-placeholder { width:210px; height:210px; margin:12px auto; display:grid; place-items:center; border:2px dashed #bdcbb3; border-radius:14px; color:var(--muted); padding:20px; }
+    .hint { color:var(--muted); font-size:.88rem; }
+    .notice { background:#fff4df; border-left:4px solid var(--orange); padding:12px 14px; border-radius:10px; color:#72512c; font-size:.9rem; margin-top:16px; }
+    .confirm-row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:18px; }
+    .success { color:var(--green-dark); font-weight:850; min-height:24px; }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
+    .stat { background:#f5f4e9; border-radius:15px; padding:15px; }
+    .stat small { display:block; color:var(--muted); }.stat strong { color:var(--green-dark); font-size:1.25rem; }
+    .history { margin-top:18px; display:grid; gap:9px; }
+    .history-item { display:flex; justify-content:space-between; gap:12px; padding:12px 14px; background:#f7f6ec; border-radius:12px; font-size:.9rem; }
+    .footer { text-align:center; padding:42px 0 55px; color:var(--muted); }
+    .footer strong { color:var(--green-dark); }
+    .toast { position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px); opacity:0; pointer-events:none;
+      background:#263c2a; color:white; padding:12px 18px; border-radius:99px; box-shadow:var(--shadow); transition:.25s; z-index:10; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    @media(max-width:850px) { .menu-grid{grid-template-columns:repeat(2,1fr)} .hero{grid-template-columns:1fr; padding-top:25px}.hero-art{min-height:310px}.payment-grid{grid-template-columns:1fr} }
+    @media(max-width:560px) {
+      .wrap{width:min(100% - 24px,1100px)} .nav-links{display:none}.hero{gap:22px}.hero-art{min-height:270px}
+      .bowl{width:190px;height:155px;font-size:95px}.custom-row{grid-template-columns:1fr}.menu-grid{gap:10px}
+      .food-card{padding:12px}.food-emoji{height:70px;font-size:43px}.stats{grid-template-columns:1fr}
+      .info-row{align-items:flex-start}.info-value{font-size:.9rem}
+    }
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <div class="brand"><span class="brand-mark">🍚</span> Một Bữa Cơm</div>
+      <div class="nav-links">
+        <a href="#mon-an">Thực đơn</a>
+        <a href="#thanh-toan">Ủng hộ</a>
+        <a href="#loi-cam-on">Lời cảm ơn</a>
+      </div>
+      <a class="pill" href="#thanh-toan">🥬 Góp một chút vui</a>
+    </nav>
+
+    <header class="hero">
+      <div>
+        <span class="pill">🍳 Dự án chống đói bằng sự tử tế</span>
+        <h1>Một bữa cơm,<br><span>vạn niềm vui!</span></h1>
+        <p>Ví không cần quá dày, tấm lòng chỉ cần vừa đủ. Chọn một món bên dưới để gửi chút yêu thương — còn nếu hôm nay bạn chỉ ghé chơi thì cũng xin mời một chiếc bụng vui vẻ!</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#mon-an" style="text-decoration:none">Chọn món ngay 🍜</a>
+          <a class="btn btn-soft" href="#thanh-toan" style="text-decoration:none">Xem QR thanh toán</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Minh họa một tô cơm vui vẻ">
+        <span class="float f1">🥕</span><span class="float f2">🥑</span>
+        <span class="float f3">🍅</span><span class="float f4">🌽</span>
+        <div class="bowl">🍚</div>
+        <div class="scribble">No bụng, vui lòng! ✨</div>
+      </div>
+    </header>
+
+    <section id="mon-an">
+      <div class="section-head">
+        <span class="pill">📋 Thực đơn hôm nay</span>
+        <h2>Chọn món, chọn niềm vui</h2>
+        <p>Mỗi lựa chọn là một lời động viên. Chọn món có sẵn hoặc tự nhập số tiền tùy tâm nhé.</p>
+      </div>
+      <div class="menu-grid" id="foodMenu">
+        <button class="food-card" type="button" data-amount="5000">
+          <span class="food-emoji">🧋</span><strong>Trà đá giải nhiệt</strong>
+          <small>Mát lòng mát dạ</small><span class="price">5.000đ</span>
+        </button>
+        <button class="food-card" type="button" data-amount="15000">
+          <span class="food-emoji">🥖</span><strong>Bánh mì năng lượng</strong>
+          <small>Giòn tan một ngày vui</small><span class="price">15.000đ</span>
+        </button>
+        <button class="food-card" type="button" data-amount="30000">
+          <span class="food-emoji">🍜</span><strong>Tô mì ấm bụng</strong>
+          <small>Sợi mì kết nối yêu thương</small><span class="price">30.000đ</span>
+        </button>
+        <button class="food-card" type="button" data-amount="50000">
+          <span class="food-emoji">🍛</span><strong>Bữa cơm đầy đặn</strong>
+          <small>Cơm ngon, ngày đẹp</small><span class="price">50.000đ</span>
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <div class="custom-panel">
+        <div class="custom-row">
+          <div>
+            <label for="customAmount">💚 Hoặc bạn tự chọn số tiền (VNĐ)</label>
+            <input id="customAmount" type="number" min="1000" step="1000" placeholder="Ví dụ: 20000">
+            <p class="hint">Số tiền tối thiểu 1.000đ. Không có áp lực — tùy tâm thôi!</p>
+          </div>
+          <div>
+            <div class="amount-preview">Bạn đang chọn: <span id="amountPreview">0đ</span></div>
+            <p class="hint" style="margin-bottom:0">Mã nội dung chuyển khoản sẽ được tạo riêng cho lượt này.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="thanh-toan">
+      <div class="section-head">
+        <span class="pill">🏦 Thanh toán gọn lẹ</span>
+        <h2>Quét QR là xong phần công nghệ</h2>
+        <p>Kiểm tra kỹ tên người nhận và số tiền trên ứng dụng ngân hàng trước khi xác nhận chuyển khoản.</p>
+      </div>
+      <div class="payment-panel">
+        <div class="payment-grid">
+          <div>
+            <h3 style="margin-top:0;color:var(--green-dark)">Thông tin chuyển khoản</h3>
+            <div class="payment-info">
+              <div class="info-row"><div><span class="info-label">Ngân hàng</span><span class="info-value" id="bankName">Chưa cấu hình</span></div><button class="copy-btn" data-copy="bankName">Sao chép</button></div>
+              <div class="info-row"><div><span class="info-label">Chủ tài khoản</span><span class="info-value" id="accountName">CHUA CAU HINH</span></div><button class="copy-btn" data-copy="accountName">Sao chép</button></div>
+              <div class="info-row"><div><span class="info-label">Số tài khoản</span><span class="info-value" id="accountNumber">••••••••••</span></div><button class="copy-btn" data-copy="accountNumber">Sao chép</button></div>
+              <div class="info-row"><div><span class="info-label">Số tiền</span><span class="info-value" id="paymentAmount">0đ</span></div><button class="copy-btn" data-copy="paymentAmount">Sao chép</button></div>
+              <div class="info-row"><div><span class="info-label">Nội dung chuyển khoản</span><span class="info-value" id="transferContent">BUACOM</span></div><button class="copy-btn" data-copy="transferContent">Sao chép</button></div>
+            </div>
+            <div class="notice">⚠️ Đây là trang mẫu thanh toán. QR chỉ được tạo đúng khi bạn điền thông tin ngân hàng thật của chính mình hoặc tài khoản được chủ sở hữu cho phép. Luôn đối chiếu thông tin trong app ngân hàng.</div>
+          </div>
+          <div class="qr-card">
+            <h3 style="margin:0;color:var(--green-dark)">Mã QR của bạn</h3>
+            <div id="qrArea"><div class="qr-placeholder">Chọn một món hoặc nhập số tiền để tạo mã QR.</div></div>
+            <p class="hint" id="qrHint">Mã QR VietQR sẽ xuất hiện tại đây.</p>
+            <button class="btn btn-primary" id="confirmBtn" type="button" style="width:100%">❤️ Tôi đã chuyển khoản</button>
+            <p class="success" id="confirmMessage" role="status" aria-live="polite"></p>
+            <p class="hint">Nút xác nhận chỉ ghi nhận lời báo đã chuyển khoản trên trình duyệt này; không tự kiểm tra được giao dịch ngân hàng.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="stats-panel">
+        <div class="section-head" style="margin-bottom:10px">
+          <span class="pill">📊 Góc vui vẻ</span>
+          <h2 style="font-size:1.8rem">Những lời báo đã gửi</h2>
+          <p>Số liệu bên dưới lưu trên trình duyệt hiện tại, chỉ là lượt tự xác nhận — không phải số tiền đã được ngân hàng xác minh.</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><small>Lượt báo đã chuyển</small><strong id="totalCount">0</strong></div>
+          <div class="stat"><small>Tổng số tiền tự báo</small><strong id="totalMoney">0đ</strong></div>
+          <div class="stat"><small>Lời chúc hôm nay</small><strong>Vạn sự ngon!</strong></div>
+        </div>
+        <div class="history" id="historyList"><p class="hint">Chưa có lượt báo nào. Khi có, danh sách sẽ hiện ở đây trên thiết bị này.</p></div>
+      </div>
+    </section>
+
+    <section id="loi-cam-on">
+      <div class="thanks-panel" style="text-align:center">
+        <div style="font-size:46px">🥬 🍚 ❤️</div>
+        <h2 style="color:var(--green-dark);margin:8px 0">Cảm ơn vì đã ghé “Một Bữa Cơm”!</h2>
+        <p style="max-width:650px;margin:0 auto;color:var(--muted)">Dù bạn chọn một ly trà đá, một bữa cơm hay chỉ để lại một nụ cười, cảm ơn bạn đã góp thêm chút ấm áp cho ngày hôm nay.</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <strong>🍚 Một Bữa Cơm</strong><br>
+      Ăn ngon, sống vui, tử tế mỗi ngày.<br>
+      <small>© <span id="year"></span> Một Bữa Cơm</small>
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /*
+      ================== CẤU HÌNH NGÂN HÀNG ==================
+      Thay các giá trị mẫu bên dưới bằng thông tin tài khoản
+      mà bạn sở hữu hoặc được chủ tài khoản cho phép sử dụng.
+
+      bankId: mã ngân hàng VietQR, ví dụ:
+      "MB" (MB Bank), "VCB" (Vietcombank), "TCB" (Techcombank),
+      "BIDV", "ACB", "VPB" (VPBank), "TPB" (TPBank), "VIB".
+
+      accountNo: số tài khoản nhận tiền.
+      accountName: tên chủ tài khoản, viết IN HOA không dấu.
+      ========================================================
+    */
+    const BANK_CONFIG = {
+      bankId: "TPB",
+      bankName: "TP Bank",
+      accountNo: "10002048464",
+      accountName: "PHAM NGUYEN A KHOA",
+      qrTemplate: "compact2"
+    };
+
+    let selectedAmount = 0;
+    let transferCode = createTransferCode();
+
+    const $ = (id) => document.getElementById(id);
+    const money = (value) => new Intl.NumberFormat("vi-VN").format(value) + "đ";
+
+    function createTransferCode() {
+      return "BUACOM" + Math.random().toString(36).slice(2, 7).toUpperCase();
+    }
+
+    function bankIsConfigured() {
+      return BANK_CONFIG.bankId && BANK_CONFIG.accountNo &&
+        !BANK_CONFIG.accountNo.includes("THAY_") &&
+        BANK_CONFIG.accountName && !BANK_CONFIG.accountName.includes("TEN CHU");
+    }
+
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function updatePayment() {
+      $("amountPreview").textContent = money(selectedAmount);
+      $("paymentAmount").textContent = money(selectedAmount);
+      $("transferContent").textContent = transferCode;
+
+      const qrArea = $("qrArea");
+      if (!selectedAmount || selectedAmount < 1000 || !Number.isSafeInteger(selectedAmount)) {
+        qrArea.innerHTML = '<div class="qr-placeholder">Chọn một món hoặc nhập số tiền từ 1.000đ để tạo mã QR.</div>';
+        $("qrHint").textContent = "Mã QR VietQR sẽ xuất hiện tại đây.";
+        return;
+      }
+
+      if (!bankIsConfigured()) {
+        qrArea.innerHTML = '<div class="qr-placeholder">Bạn cần cấu hình thông tin ngân hàng trong BANK_CONFIG ở cuối file.</div>';
+        $("qrHint").textContent = "Chưa có thông tin tài khoản nhận tiền.";
+        return;
+      }
+
+      const params = new URLSearchParams({
+        amount: String(selectedAmount),
+        addInfo: transferCode,
+        accountName: BANK_CONFIG.accountName
+      });
+      const qrUrl = `https://img.vietqr.io/image/${encodeURIComponent(BANK_CONFIG.bankId)}-${encodeURIComponent(BANK_CONFIG.accountNo)}-${encodeURIComponent(BANK_CONFIG.qrTemplate)}.png?${params.toString()}`;
+      qrArea.innerHTML = "";
+      const img = document.createElement("img");
+      img.alt = "Mã QR VietQR chuyển khoản";
+      img.src = qrUrl;
+      img.onerror = () => {
+        qrArea.innerHTML = '<div class="qr-placeholder">Không tải được QR. Hãy kiểm tra mã ngân hàng và số tài khoản.</div>';
+      };
+      qrArea.appendChild(img);
+      $("qrHint").textContent = "Quét mã và kiểm tra đúng người nhận, số tiền trước khi chuyển.";
+    }
+
+    function chooseAmount(amount, card) {
+      selectedAmount = amount;
+      $("customAmount").value = "";
+      document.querySelectorAll(".food-card").forEach(el => el.classList.remove("active"));
+      if (card) card.classList.add("active");
+      transferCode = createTransferCode();
+      $("confirmMessage").textContent = "";
+      updatePayment();
+    }
+
+    document.querySelectorAll(".food-card").forEach(card => {
+      card.addEventListener("click", () => chooseAmount(Number(card.dataset.amount), card));
+    });
+
+    $("customAmount").addEventListener("input", (event) => {
+      const value = Number(event.target.value);
+      selectedAmount = Number.isFinite(value) ? Math.floor(value) : 0;
+      document.querySelectorAll(".food-card").forEach(el => el.classList.remove("active"));
+      transferCode = createTransferCode();
+      $("confirmMessage").textContent = "";
+      updatePayment();
+    });
+
+    async function copyValue(id) {
+      const element = $(id);
+      const value = element.textContent.trim();
+      if (!value || value === "0đ" || value.includes("••")) {
+        showToast("Chưa có thông tin để sao chép.");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(value);
+        showToast("Đã sao chép: " + value);
+      } catch {
+        const temp = document.createElement("textarea");
+        temp.value = value;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        temp.remove();
+        showToast("Đã sao chép!");
+      }
+    }
+
+    document.querySelectorAll("[data-copy]").forEach(button => {
+      button.addEventListener("click", () => copyValue(button.dataset.copy));
+    });
+
+    function getReports() {
+      try { return JSON.parse(localStorage.getItem("motbuacom_reports") || "[]"); }
+      catch { return []; }
+    }
+
+    function renderReports() {
+      const reports = getReports();
+      $("totalCount").textContent = reports.length;
+      $("totalMoney").textContent = money(reports.reduce((sum, item) => sum + item.amount, 0));
+      const list = $("historyList");
+      if (!reports.length) {
+        list.innerHTML = '<p class="hint">Chưa có lượt báo nào. Khi có, danh sách sẽ hiện ở đây trên thiết bị này.</p>';
+        return;
+      }
+      list.innerHTML = "";
+      reports.slice().reverse().slice(0, 6).forEach(report => {
+        const row = document.createElement("div");
+        row.className = "history-item";
+        const left = document.createElement("span");
+        left.textContent = report.code + " · " + report.date;
+        const right = document.createElement("strong");
+        right.textContent = money(report.amount);
+        row.append(left, right);
+        list.appendChild(row);
+      });
+    }
+
+    $("confirmBtn").addEventListener("click", () => {
+      if (!selectedAmount || selectedAmount < 1000 || !Number.isSafeInteger(selectedAmount)) {
+        showToast("Bạn hãy chọn số tiền hợp lệ từ 1.000đ nhé.");
+        return;
+      }
+      if (!bankIsConfigured()) {
+        showToast("Chủ website cần cấu hình tài khoản ngân hàng trước.");
+        return;
+      }
+      const reports = getReports();
+      reports.push({
+        amount: selectedAmount,
+        code: transferCode,
+        date: new Date().toLocaleString("vi-VN")
+      });
+      localStorage.setItem("motbuacom_reports", JSON.stringify(reports));
+      $("confirmMessage").textContent = "Cảm ơn bạn! Lời báo đã được lưu trên trình duyệt này 💚";
+      showToast("Đã ghi nhận lời báo của bạn!");
+      renderReports();
+      transferCode = createTransferCode();
+      $("transferContent").textContent = transferCode;
+      updatePayment();
+    });
+
+    $("bankName").textContent = BANK_CONFIG.bankName;
+    $("accountName").textContent = BANK_CONFIG.accountName;
+    $("accountNumber").textContent = BANK_CONFIG.accountNo.includes("THAY_") ? "CHƯA CẤU HÌNH" : BANK_CONFIG.accountNo;
+    $("year").textContent = new Date().getFullYear();
+    renderReports();
+    updatePayment();
+  </script>
+</body>
+</html>
